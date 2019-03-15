@@ -10,7 +10,11 @@
 #include <string.h>
 #include <stdio.h>
 
+#define ERROR_CODE "STOP"
+
 void remove_element(char *array, int index, int amount, int array_length);
 void remove_comments(char *string);
+char * get_file(char * path);
+void get_dimensions(char * type, int * width, int * height, int * depth, char * string);
 
 #endif /* ARG_HANDLER_H */

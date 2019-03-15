@@ -1,18 +1,10 @@
 #include "arg_handler.h"
+#include "cli.h"
 
-void get_color_components(char * string, int * red, int * green, int * blue)
-{
-
-}
 
 int
 main(int argc, char ** argv)
 {
-
-    struct stat st;
-    int file;
-    char * string;
-
     // Check if proper amount of arguments went into main
     if (argc != 2)
     {
@@ -20,68 +12,38 @@ main(int argc, char ** argv)
         return 1;
     }
 
-    // Try to open the file
-    file = open(argv[1], O_RDONLY);
-    if (file < 0)
+    char * string = get_file(argv[1]);
+
+    if (strcmp(string, ERROR_CODE) == 0)
     {
-        perror("Error opening file");
         return 1;
     }
-
-
-    // Get its size in bytes
-    if (fstat(file, &st) < 0) {   // Check if succesful
-        perror("Error getting file size");
-        return 1;
-    }
-
-    // Get that much memory for the string
-    // But get 1 byte more, to store the '\0' to terminate the string.
-    string = malloc(st.st_size + 1);   // 1 byte more
-    if (string == NULL) // Check we really got it.
-    {
-        fprintf(stderr, "Error: out of memory.\n");
-        return 1;
-    }
-
-    // Read the entire file into string.
-    if (read(file, string, st.st_size) < 0)
-    {
-        perror("Error reading the file");
-        return 1;
-    }
-
-    // Make sure the string is terminated.
-    string[st.st_size] = '\0';
 
     remove_comments(string);
 
-    int width = 0, height = 0, depth = 0, x = 0, y = 0, p = 0;
-    char* type;
-    char * pch;
+    int x = 0, y = 0, p = 0, width, height, depth;
+    char * type;
+    int * w = &width;
+    int * h = &height;
+    int * d = &depth;
 
-    pch = strtok (string, " \n");
-    type = pch;
-    pch = strtok (NULL, " \n");
-    width = atoi(pch);
-    pch = strtok (NULL, " \n");
-    height = atoi(pch);
-    pch = strtok (NULL, " \n");
-    depth = atoi(pch);
-    pch = strtok (NULL, " \n");
+    get_dimensions(type, w, h, d, string);
+
+    string = strtok (NULL, " \n");
 
     int red[width][height];
     int green[width][height];
     int blue[width][height];
 
-    while (pch != NULL) // Generate tokens as long as you dont encounter NULL
+
+    while (string != NULL) // Generate tokens as long as you dont encounter NULL
     {
-        printf("p = %d\t, p%3 = %d\t, pch = %s\t, x = %d\t, y = %d\n",p,p%3, pch,x,y);
+        printf("p = %d\t, p%3 = %d\t, string = %s\t, x = %d\t, y = %d\n",p,p%3, string ,x,y);
         switch(p % 3)
         {
-          case 0: red[x][y] = atoi(pch);break;
-          case 1: green[x][y] = atoi(pch); break;
-          case 2: blue[x][y] = atoi(pch);x++;break;
+          case 0: red[x][y] = atoi(string);break;
+          case 1: green[x][y] = atoi(string); break;
+          case 2: blue[x][y] = atoi(string);x++;break;
         }
         if ( x == width)
         {
@@ -89,8 +51,10 @@ main(int argc, char ** argv)
             y++;
         }
         p++;
-        pch = strtok (NULL, " \n");
+        string = strtok (NULL, " \n");
     }
+
+    run_cli(width, height);
 
     return 0;
 }
