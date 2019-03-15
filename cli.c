@@ -19,7 +19,7 @@ void run_cli(int width, int height)
         int x,y;
         printf("x,y = ");
         scanf("%d,%d", &x, &y);
-        printf("x = %d, y = %d",x,y);
+        printf("x = %d, y = %d\n",x,y);
     }
 
 
