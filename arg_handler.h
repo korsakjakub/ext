@@ -10,7 +10,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#define ERROR_CODE "STOP"
+const int ERROR_CODE = -1;
 
 void remove_element(char *array, int index, int amount, int array_length);
 void remove_comments(char *string);
