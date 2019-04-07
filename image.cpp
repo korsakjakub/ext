@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include "colors.h"
 
 Image::Image (char* string)
 {
@@ -25,6 +26,7 @@ Image::Image (char* string)
 int Image::get_width() {return width;}
 int Image::get_height() {return height;}
 int Image::get_color_depth() {return color_depth;}
+
 void Image::fill(char * string)
 {
 
@@ -42,11 +44,11 @@ void Image::fill(char * string)
         }
         if ( x == width)
         {
-            x = 0;
-            y++;
             red[y] = t_red;
             green[y] = t_green;
             blue[y] = t_blue;
+            x = 0;
+            y++;
         }
 
         color++;
@@ -60,7 +62,27 @@ void Image::print()
     {
         for (size_t j = 0; j < height; j++)
         {
-            printf("%d\t %d\t %d\n",red[i][j], green[i][j], blue[i][j]);
+            printf("%s%d %s%d %s%d%s \t",RED,red[i][j],GRN, green[i][j], BLU, blue[i][j], NRM);
         }
+        printf("\n");
     }
+}
+
+void Image::flip(char orientation)
+{
+    printf("flipped %c the image\n",orientation);
+    print();
+}
+void Image::zoom()
+{
+    int n=1;
+    printf("zoomed %d times the image\n",n);
+}
+void Image::rmcolor()
+{
+    printf("removed some color lol\n");
+}
+void Image::puzzle()
+{
+    printf("oh boy whats gonna happen!?\n");
 }

@@ -1,11 +1,11 @@
 #include "cli.h"
+#include "stdlib.h"
+#include "stdio.h"
 #include "image_operations.h"
+#include "colors.h"
 
-int clean_stdin()
-{
-    while (getchar() !='\n');
-    return 1;
-}
+
+
 
 void run_cli(Image &img)
 {
@@ -13,10 +13,10 @@ void run_cli(Image &img)
     int width = img.get_width();
     int height = img.get_height();
     int depth = img.get_color_depth();
+    int answer;
 
     printf("Rozmiar zdjęcia:\t szerokośc = %d\t wysokość = %d\t głębia = %d\n",width, height, depth);
 
-    int answer;
 
     while(1)
     {
@@ -24,51 +24,27 @@ void run_cli(Image &img)
         answer = getchar();
         if(answer == 'n' || answer == 'y') break;
     }
+
     if(answer == 'y')
     {
-        int x1 = 0, y1 = 0, x2 = 0, y2 = 0;
-        char c;
-
-        do
-        {
-            printf("x1,y1,x2,y2 = ");
-        } while(
-               (
-                    (scanf("%d,%d,%d,%d%c", &x1, &y1, &x2, &y2, &c) != 5 || c!='\n') && clean_stdin()) ||
-                    x1 > width || y1 > height ||
-                    x2 > width || y2 > height ||
-                    x2 <= x1 || y2 <= y1 ||
-                    x1 <= 0 ||  y1 <= 0
-               );
+        crop_image(answer, width, height);
     }
-
-
-    draw_line(get_terminal_width(w));
-    printf("Opcje:\n");
-    printf("1. Odbijanie w pionie\n");
-    printf("2. Odbijanie w poziomie\n");
-    printf("3. Powiększanie n razy\n");
-    printf("4. Pomniejszanie n razy\n");
-    printf("5. Usunięcie danego koloru\n");
-    printf("6. Puzzle\n");
-    draw_line(get_terminal_width(w));
     while(1)
     {
         answer = getchar();
-        switch(atoi(answer))
+        switch(answer)
         {
-            case 1: flip('v',img);
+            case '1': clear_shell();img.flip('v');
                     break;
-            case 2: flip('h',img);
+            case '2': clear_shell();img.flip('h');
                     break;
-            case 3: zoom('+',n,img);
+            case '3': clear_shell();img.zoom();
                     break;
-            case 4: zoom('-',n,img);
+            case '4': clear_shell();img.rmcolor();
                     break;
-            case 5: rmcolor(img);
+            case '5': clear_shell();img.puzzle();
                     break;
-            case 6: puzzle(img);
-                    break;
+            default: draw_menu(get_terminal_width(w));
         }
 
     }
@@ -90,7 +66,51 @@ void draw_line(int width)
 {
     for (size_t i = 0; i < width; i++)
     {
-        printf("_");
+        printf("%s_",YEL);
     }
-    printf("\n\n");
+    printf("%s\n\n",NRM);
+}
+
+void draw_menu(int width)
+{
+    draw_line(width);
+    printf("%sOpcje:%s\n",CYN,NRM);
+    printf("%s1.%s Odbijanie w pionie\n",RED, NRM);
+    printf("%s2.%s Odbijanie w poziomie\n",RED, NRM);
+    printf("%s3.%s Zoom (+/-) n razy\n",RED, NRM);
+    printf("%s4.%s Usunięcie danego koloru\n",RED,NRM);
+    printf("%s5.%s Puzzle\n",RED,NRM);
+    draw_line(width);
+}
+void crop_image(char answer, int width, int height)
+{
+    int x1 = 0, y1 = 0, x2 = 0, y2 = 0;
+    char c;
+
+    do
+    {
+        printf("x1,y1,x2,y2 = ");
+    } while(
+           (
+                (scanf("%d,%d,%d,%d%c", &x1, &y1, &x2, &y2, &c) != 5 || c!='\n') && clean_stdin()) ||
+                x1 > width || y1 > height ||
+                x2 > width || y2 > height ||
+                x2 <= x1 || y2 <= y1 ||
+                x1 <= 0 ||  y1 <= 0
+           );
+
+    // TODO
+    // 1. rm rows: (start, y1 - 1), (y2 + 1, end)
+    // 2. rm cols: (start, x1 - 1), (x2 + 1, end)
+
+}
+void clear_shell() {
+    // \x1B[2J clears screen, \x1B[H moves the cursor to top-left corner
+    printf("\x1B[2J\x1B[H");
+}
+
+int clean_stdin()
+{
+    while (getchar() !='\n');
+    return 1;
 }

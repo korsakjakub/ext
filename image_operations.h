@@ -1,5 +1,6 @@
+#ifndef IMAGE_OPERATIONS_H
+#define IMAGE_OPERATIONS_H
+#include "image.h"
 
-void flip(char,&Image)
-zoom(char,int,&Image)
-rmcolor(&Image)
-puzzle(&Image
+
+#endif /* IMAGE_OPERATIONS_H */

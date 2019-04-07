@@ -11,6 +11,11 @@ class Image {
         int get_color_depth();
         void fill(char *);
         void print();
+
+        void flip(char orientation);
+        void zoom();
+        void rmcolor();
+        void puzzle();
     private:
         int width, height, color_depth;
         std::vector<short int> t_red;
