@@ -44,6 +44,7 @@ run_cli(Image &img)
                     break;
             case '5': img.puzzle();
                     break;
+            case '6': img.write();
             default: clear_shell();
                      img.print();
                      draw_menu(get_terminal_width(w));

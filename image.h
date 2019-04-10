@@ -14,6 +14,7 @@ class Image {
         void print();
         void crop(int, int, int, int);
         void get_square(int, int, int, int, int);
+        void write();
 
         void flip(char orientation);
         void zoom();

@@ -1,3 +1,2 @@
 #!/bin/sh
-tcc -o ext main.c arg_handler.c cli.c
-./ext "testy/e3.ppm"
+g++ -o ext main.cpp arg_handler.cpp cli.cpp image.cpp

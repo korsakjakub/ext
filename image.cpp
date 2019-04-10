@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <algorithm>
+#include <fstream>
 
 Image::Image (char* string)
 {
@@ -36,6 +37,35 @@ Image::get_color_depth() {return color_depth;}
 
 int
 Image::get_type() { return type[1]; }// 50 - pgm, 51 - ppm
+
+void
+Image::write()
+{
+    if( type[1] == 51)
+    {
+    std::ofstream output_file("./output.ppm");
+    output_file << type <<"\n" << width << " " << height << "\n" <<color_depth << "\n";
+        for(size_t j = 0; j < height; j++)
+        {
+            for(size_t i = 0; i < width; i++)
+            {
+                output_file << red[j][i] << "\n" << green[j][i] << "\n" <<  blue[j][i] <<"\n";
+            }
+        }
+    } else if (type[1] == 50)
+    {
+    std::ofstream output_file("./output.pgm");
+    output_file << type <<"\n" << width << " " << height << "\n" <<color_depth << "\n";
+        for(size_t j = 0; j < height; j++)
+        {
+            for(size_t i = 0; i < width; i++)
+            {
+                output_file << red[j][i] << "\n";
+            }
+        }
+
+    }
+}
 
 void
 Image::fill(char * string)
@@ -162,7 +192,24 @@ void
 Image::zoom()
 {
     int n=1;
-    printf("zoomed %d times the image\n",n);
+    std::vector<short int> row;
+    std::vector<std::vector<short int> > r_col;
+    std::vector<std::vector<short int> > g_col;
+    std::vector<std::vector<short int> > b_col;
+    row.resize(width,0);
+    r_col.resize(height,row);
+    g_col.resize(height,row);
+    b_col.resize(height,row);
+
+    while(1)
+    {
+        printf("podaj n: ");
+        scanf("%u",&n);
+        if(n <= 0 || n >= width || n >= height){
+            continue;
+        }
+            printf("zoomed %d times the image\n",n);
+    }
 }
 
 void
