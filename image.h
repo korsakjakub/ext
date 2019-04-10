@@ -9,8 +9,11 @@ class Image {
         int get_width();
         int get_height();
         int get_color_depth();
+        int get_type();
         void fill(char *);
         void print();
+        void crop(int, int, int, int);
+        void get_square(int, int, int, int, int);
 
         void flip(char orientation);
         void zoom();
@@ -18,6 +21,7 @@ class Image {
         void puzzle();
     private:
         int width, height, color_depth;
+        char * type;
         std::vector<short int> t_red;
         std::vector<short int> t_green;
         std::vector<short int> t_blue;
