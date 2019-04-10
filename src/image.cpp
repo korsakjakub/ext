@@ -2,6 +2,7 @@
 #include "colors.h"
 
 #include <time.h>
+#include <iostream>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -41,9 +42,21 @@ Image::get_type() { return type[1]; }// 50 - pgm, 51 - ppm
 void
 Image::write()
 {
+    std::string file_path;
+    while(file_path.empty())
+    {
+        printf("Podaj nazwę pliku:\n");
+
+        if (!std::getline(std::cin, file_path))
+        {
+            printf("I/O error");
+            continue;
+        }
+    }
+
     if( type[1] == 51)
     {
-    std::ofstream output_file("./output.ppm");
+    std::ofstream output_file("output/" + file_path + ".ppm");
     output_file << type <<"\n" << width << " " << height << "\n" <<color_depth << "\n";
         for(size_t j = 0; j < height; j++)
         {
@@ -54,7 +67,7 @@ Image::write()
         }
     } else if (type[1] == 50)
     {
-    std::ofstream output_file("./output.pgm");
+    std::ofstream output_file("output/" + file_path + ".pgm");
     output_file << type <<"\n" << width << " " << height << "\n" <<color_depth << "\n";
         for(size_t j = 0; j < height; j++)
         {

@@ -1,2 +1,2 @@
 #!/bin/sh
-g++ -o ext main.cpp arg_handler.cpp cli.cpp image.cpp
+g++ -o build/ext src/main.cpp src/arg_handler.cpp src/cli.cpp src/image.cpp

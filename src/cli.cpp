@@ -45,6 +45,7 @@ run_cli(Image &img)
             case '5': img.puzzle();
                     break;
             case '6': img.write();
+                    break;
             default: clear_shell();
                      img.print();
                      draw_menu(get_terminal_width(w));
@@ -87,6 +88,7 @@ draw_menu(int width)
     printf("%s3.%s Zoom (+/-) n razy\n",RED, NRM);
     printf("%s4.%s Usunięcie danego koloru\n",RED,NRM);
     printf("%s5.%s Puzzle\n",RED,NRM);
+    printf("%s6.%s Zapisz\n",RED,NRM);
     draw_line(width);
 }
 void
