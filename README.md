@@ -5,7 +5,7 @@
 Należy:
 * otworzyć emulator terminala
 * `git clone github.com/korsakjakub/ext.git`
-* `cd ext/
+* `cd ext/`
 
 ## Struktura projektu
 * Pliki źródłowe (c++) znajdują się w `src/`,
@@ -19,4 +19,4 @@ W `/` znajduje się skrypt `compile.sh`, którym można wszystko skompilować.
 ## Użycie
 `./build/ext <ścieżka do zdjęcia>`
 
-Zalecany emulator terminala ze wsparciem ANSI escape sequences (raczej wszystkie terminale, które można znaleźć w *NIX)
+Zalecany emulator terminala ze wsparciem ANSI escape sequences (raczej wszystkie terminale, które można znaleźć w *NIX). Ze względu na szalenie niską wydajność formatu `.ppm` i `.pgm` bezcelowym zdaje się używanie plików większych niż ok. 200x200
