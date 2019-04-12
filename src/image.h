@@ -6,6 +6,7 @@
 typedef std::vector<short int> vector;
 typedef std::vector<vector> doubleVector;
 typedef std::vector<doubleVector> doubleVectorWrapper;
+typedef std::vector<doubleVectorWrapper> tripleVectorWrapper;
 
 class Image {
     public:
@@ -25,6 +26,8 @@ class Image {
         void puzzle();
     private:
         void get_square(int, int, int, int, int);
+        void colors_to_base(doubleVectorWrapper &, tripleVectorWrapper &, int, int, int);
+        void base_to_colors(tripleVectorWrapper &, doubleVectorWrapper &, int, int, int);
         void fill_with_value(doubleVector &, short int);
         int round_to_n_multiple(int,int);
         void pause();

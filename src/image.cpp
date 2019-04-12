@@ -61,8 +61,8 @@ Image::write()
         }
     } else if (type[1] == 50)
     {
-    std::ofstream output_file("output/" + file_path + ".pgm");
-    output_file << type <<"\n" << width << " " << height << "\n" <<color_depth << "\n";
+        std::ofstream output_file("output/" + file_path + ".pgm");
+        output_file << type <<"\n" << width << " " << height << "\n" <<color_depth << "\n";
         for(size_t j = 0; j < height; j++)
         {
             for(size_t i = 0; i < width; i++)
@@ -70,7 +70,6 @@ Image::write()
                 output_file << red[j][i] << "\n";
             }
         }
-
     }
     printf("Zapisano pomyślnie.\n");
     pause();
@@ -90,9 +89,9 @@ Image::fill(char * string)
         {
             switch(color % 3)
             {
-              case 0: t_red[x] = atoi(string);break;
-              case 1: t_green[x] = atoi(string); break;
-              case 2: t_blue[x] = atoi(string);x++;break;
+                case 0: t_red[x] = atoi(string);break;
+                case 1: t_green[x] = atoi(string); break;
+                case 2: t_blue[x] = atoi(string);x++;break;
             }
             if ( x == width)
             {
@@ -107,14 +106,12 @@ Image::fill(char * string)
         } else if(get_type() == 50)
         {
             t_red[x] = atoi(string);
-            //printf("%d\t",t_red[x]);
             x++;
             if (x == width)
             {
                 red[y] = t_red;
                 x = 0;
                 y++;
-                //printf("\n");
             }
         }
         string = strtok (NULL, " \n");
@@ -268,9 +265,7 @@ Image::zoom()
             fill_with_value(r_base[i*x+j],ir_col[i][j]);
             fill_with_value(g_base[i*x+j],ig_col[i][j]);
             fill_with_value(b_base[i*x+j],ib_col[i][j]);
-            //printf("%d\t%d\t%d\n", ir_col[i][j], ig_col[i][j], ib_col[i][j]);
         }
-        //printf("\n");
     }
 
     int k = 0;
@@ -349,23 +344,9 @@ Image::puzzle()
     g_base.resize(x*y,col);
     b_base.resize(x*y,col);
 
-    int k = 0;
-    for(size_t j = x; j>= 1; j--)
-    {
-        for(size_t i = y; i >= 1; i--)
-        {
-                for(short int p = 0; p <= n-1; p++)
-                {
-                    for(short int q = 0; q <= n-1; q++)
-                    {
-                        r_base[k][p][q] = red[(y-i)*n + p][(x-j)*n + q];
-                        g_base[k][p][q] = green[(y-i)*n + p][(x-j)*n + q];
-                        b_base[k][p][q] = blue[(y-i)*n + p][(x-j)*n + q];
-                    }
-                }
-        k++;
-        }
-    }
+    doubleVectorWrapper colors = {red, green, blue};
+    tripleVectorWrapper base = {r_base, g_base, b_base};
+
 
     // Fisher-Yates
     srand(time(NULL));
@@ -377,23 +358,8 @@ Image::puzzle()
         swap(b_base[i],b_base[j]);
     }
 
-    k=0;
-    for(size_t j = x; j>= 1; j--)
-    {
-        for(size_t i = y; i >= 1; i--)
-        {
-                for(short int p = 0; p <= n-1; p++)
-                {
-                    for(short int q = 0; q <= n-1; q++)
-                    {
-                        red[(y-i)*n + p][(x-j)*n + q] = r_base[k][p][q];
-                        green[(y-i)*n + p][(x-j)*n + q] = g_base[k][p][q];
-                        blue[(y-i)*n + p][(x-j)*n + q] = b_base[k][p][q];
-                    }
-                }
-        k++;
-        }
-    }
+    colors_to_base(colors, base, x, y, n);
+
 }
 
 int
@@ -409,4 +375,48 @@ Image::pause()
     {
         printf("Enter aby kontynuować.\n");
     } while (std::cin.get() != '\n');
+}
+void
+Image::colors_to_base(doubleVectorWrapper &colors, tripleVectorWrapper &base, int x, int y, int n)
+{
+    int k=0;
+    for(size_t o = 0; o < colors.size(); o++)
+    {
+        for(size_t j = x; j>= 1; j--)
+        {
+            for(size_t i = y; i >= 1; i--)
+            {
+                for(short int p = 0; p <= n-1; p++)
+                {
+                    for(short int q = 0; q <= n-1; q++)
+                    {
+                        colors[o][(y-i)*n + p][(x-j)*n + q] = base[o][k][p][q];
+                    }
+                }
+                k++;
+            }
+        }
+    }
+}
+void
+Image::base_to_colors(tripleVectorWrapper &base, doubleVectorWrapper &colors, int x, int y, int n)
+{
+    int k=0;
+    for(size_t o = 0; o < colors.size(); o++)
+    {
+        for(size_t j = x; j>= 1; j--)
+        {
+            for(size_t i = y; i >= 1; i--)
+            {
+                for(short int p = 0; p <= n-1; p++)
+                {
+                    for(short int q = 0; q <= n-1; q++)
+                    {
+                        base[o][k][p][q] = colors[o][(y-i)*n + p][(x-j)*n + q];
+                    }
+                }
+                k++;
+            }
+        }
+    }
 }
