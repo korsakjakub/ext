@@ -3,9 +3,6 @@
 #include "stdio.h"
 #include "colors.h"
 
-
-
-
 void
 run_cli(Image &img)
 {
@@ -48,7 +45,7 @@ run_cli(Image &img)
                     break;
             default: clear_shell();
                      img.print();
-                     draw_menu(get_terminal_width(w));
+                     draw_menu(get_terminal_width(w), img.get_width(), img.get_height());
         }
 
     }
@@ -79,16 +76,17 @@ draw_line(int width)
 }
 
 void
-draw_menu(int width)
+draw_menu(int width, int img_width, int img_height)
 {
     draw_line(width);
     printf("%sOpcje:%s\n",CYN,NRM);
     printf("%s1.%s Odbijanie w pionie\n",RED, NRM);
     printf("%s2.%s Odbijanie w poziomie\n",RED, NRM);
-    printf("%s3.%s Zoom (+/-) n razy\n",RED, NRM);
+    printf("%s3.%s Zoom n razy\n",RED, NRM);
     printf("%s4.%s Usunięcie danego koloru\n",RED,NRM);
     printf("%s5.%s Puzzle\n",RED,NRM);
     printf("%s6.%s Zapisz\n",RED,NRM);
+    printf("szerokość: %d, wysokośc : %d\n", img_width, img_height);
     draw_line(width);
 }
 void
@@ -110,7 +108,6 @@ crop_image(Image &img , int width, int height)
            );
     img.crop(x1,y1,x2,y2);
     printf("przycięto do (%d,%d),(%d,%d)\n",x1,y1,x2,y2);
-    img.print();
 }
 
 void

@@ -22,7 +22,6 @@ int main(int argc, char ** argv)
 
     Image image(string);
     image.fill(string);
-    //image.print();
     run_cli(image);
 
     return 0;

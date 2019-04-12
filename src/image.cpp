@@ -43,16 +43,10 @@ void
 Image::write()
 {
     std::string file_path;
-    while(file_path.empty())
-    {
+    do{
         printf("Podaj nazwę pliku:\n");
-
-        if (!std::getline(std::cin, file_path))
-        {
-            printf("I/O error");
-            continue;
-        }
-    }
+        std::cin>>file_path;
+    }while(file_path.empty());
 
     if( type[1] == 51)
     {
@@ -78,6 +72,8 @@ Image::write()
         }
 
     }
+    printf("Zapisano pomyślnie.\n");
+    pause();
 }
 
 void
@@ -129,25 +125,28 @@ Image::fill(char * string)
 void
 Image::print()
 {
-    if(get_type() == 51)//ppm
+    if(width < 200 && height < 200)
     {
-        for (size_t i = 0; i < height; i++)
+        if(get_type() == 51)//ppm
         {
-            for (size_t j = 0; j < width; j++)
+            for (size_t i = 0; i < height; i++)
             {
-                printf("%s%d %s%d %s%d%s \t",RED,red[i][j],GRN, green[i][j], BLU, blue[i][j], NRM);
+                for (size_t j = 0; j < width; j++)
+                {
+                    printf("%s%d %s%d %s%d%s \t",RED,red[i][j],GRN, green[i][j], BLU, blue[i][j], NRM);
+                }
+                printf("\n");
             }
-            printf("\n");
-        }
-    } else if (get_type() == 50)//pgm
-    {
-        for (size_t i = 0; i < height; i++)
+        } else if (get_type() == 50)//pgm
         {
-            for (size_t j = 0; j < width; j++)
+            for (size_t i = 0; i < height; i++)
             {
-                printf("%s%d \t",CYN, red[i][j]);
+                for (size_t j = 0; j < width; j++)
+                {
+                    printf("%s%d \t",CYN, red[i][j]);
+                }
+                printf("\n%s",NRM);
             }
-            printf("\n%s",NRM);
         }
     }
 }
@@ -196,59 +195,123 @@ Image::flip(char orientation)
         std::reverse(red.begin(), red.end());
         std::reverse(green.begin(), green.end());
         std::reverse(blue.begin(), blue.end());
-
     }
-    print();
+}
+void
+Image::fill_with_value(doubleVector &arr, short int value)
+{
+    for(size_t i = 0; i < arr.size(); i++)
+    {
+        for(size_t j = 0; j < arr.size(); j++)
+        {
+            arr[i][j] = value;
+        }
+    }
 }
 
 void
 Image::zoom()
 {
-    int n=1;
-    std::vector<short int> row;
-    std::vector<std::vector<short int> > r_col;
-    std::vector<std::vector<short int> > g_col;
-    std::vector<std::vector<short int> > b_col;
-    row.resize(width,0);
-    r_col.resize(height,row);
-    g_col.resize(height,row);
-    b_col.resize(height,row);
+    int n=1, x, y;
 
     while(1)
     {
         printf("podaj n: ");
-        scanf("%u",&n);
-        if(n <= 0 || n >= width || n >= height){
+        scanf("%d",&n);
+        if(n <= 0 || n >= width || n >= height || height/n <= n || width/n <= n){
             continue;
         }
-            printf("zoomed %d times the image\n",n);
+        break;
     }
+
+    x = round_to_n_multiple(width,n);
+    crop(1,1,x*n,x*n);
+
+    vector i_row;
+    doubleVector ir_col;
+    doubleVector ig_col;
+    doubleVector ib_col;
+
+    int half_length = (x*n)/2;
+
+    i_row.resize(2*half_length,0);
+    ir_col.resize(2*half_length,i_row);
+    ig_col.resize(2*half_length,i_row);
+    ib_col.resize(2*half_length,i_row);
+
+    for(size_t i = 0; i < half_length; i++)
+    {
+        for(size_t j = 0; j < half_length; j++)
+        {
+            ir_col[i][j] = red[j+half_length/2][i+half_length/2];
+            ig_col[i][j] = green[j+half_length/2][i+half_length/2];
+            ib_col[i][j] = blue[j+half_length/2][i+half_length/2];
+        }
+    }
+
+    vector row;
+    doubleVector col;
+    doubleVectorWrapper r_base;
+    doubleVectorWrapper g_base;
+    doubleVectorWrapper b_base;
+
+    row.resize(x,0);
+    col.resize(x,row);
+    r_base.resize(x*x,col);
+    g_base.resize(x*x,col);
+    b_base.resize(x*x,col);
+
+    for(size_t i = 0; i < x; i++)
+    {
+        for(size_t j = 0; j < x; j++)
+        {
+            fill_with_value(r_base[i*x+j],ir_col[i][j]);
+            fill_with_value(g_base[i*x+j],ig_col[i][j]);
+            fill_with_value(b_base[i*x+j],ib_col[i][j]);
+            //printf("%d\t%d\t%d\n", ir_col[i][j], ig_col[i][j], ib_col[i][j]);
+        }
+        //printf("\n");
+    }
+
+    int k = 0;
+    for(size_t j = x; j>= 1; j--)
+    {
+        for(size_t i = x; i >= 1; i--)
+        {
+                for(size_t p = 0; p < n; p++)
+                {
+                    for(size_t q = 0; q < n; q++)
+                    {
+                        red[(x-i)*n + p][(x-j)*n + q] = r_base[k][p][q];
+                        green[(x-i)*n + p][(x-j)*n + q] = g_base[k][p][q];
+                        blue[(x-i)*n + p][(x-j)*n + q] = b_base[k][p][q];
+                    }
+                }
+        k++;
+        }
+    }
+
+    pause();
+
 }
 
 void
 Image::rmcolor()
 {
-    char color;
-    std::vector<short int> z(width,0);
+    std::string color;
+    vector z(width,0);
 
-    while(color = getchar())
+    printf("który kolor? [c]zerwony/[z]ielony/[n]iebieski\n");
+    do
     {
-        printf("który kolor? [c]zerwony/[z]ielony/[n]iebieski\n");
-        color = getchar();
-        if(color == 'c')
-        {
-            std::fill(red.begin(),red.end(),z);
-            break;
-        } else if (color == 'z')
-        {
-            std::fill(green.begin(),green.end(),z);
-            break;
-        } else if(color == 'n')
-        {
-            std::fill(blue.begin(),blue.end(),z);
-            break;
-        } else break;
-    }
+        std::cin>>color;
+    }while(color.length() != 1);
+
+    if(color == "c")std::fill(red.begin(),red.end(),z);
+    if(color == "z")std::fill(green.begin(),green.end(),z);
+    if(color == "n")std::fill(blue.begin(),blue.end(),z);
+
+    pause();
 }
 
 void
@@ -269,19 +332,16 @@ Image::puzzle()
         break;
     }
 
-    int nowe_width = width - width % n;
-    int nowe_height = height - height % n;
-    // ilość "kostek" w x i y
-    x = nowe_width/n;
-    y = nowe_height/n;
+    x = round_to_n_multiple(width, n);
+    y = round_to_n_multiple(height, n);
 
-    crop(1,1,nowe_width,nowe_height);
+    crop(1,1,x*n,y*n);
 
-    std::vector<short int> row;
-    std::vector<std::vector<short int> > col;
-    std::vector<std::vector<std::vector<short int> > > r_base;
-    std::vector<std::vector<std::vector<short int> > > g_base;
-    std::vector<std::vector<std::vector<short int> > > b_base;
+    vector row;
+    doubleVector col;
+    doubleVectorWrapper r_base;
+    doubleVectorWrapper g_base;
+    doubleVectorWrapper b_base;
 
     row.resize(n,0);
     col.resize(n,row);
@@ -334,4 +394,19 @@ Image::puzzle()
         k++;
         }
     }
+}
+
+int
+Image::round_to_n_multiple(int x, int n)
+{
+    return  (x - x % n) / n;
+}
+
+void
+Image::pause()
+{
+    do
+    {
+        printf("Enter aby kontynuować.\n");
+    } while (std::cin.get() != '\n');
 }
