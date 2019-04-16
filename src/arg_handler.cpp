@@ -11,6 +11,7 @@ remove_element(char *array, int index, int amount, int array_length)
 void
 remove_comments(char *string)
 {
+    bool done = false;
 
     for (size_t i = 0; i < strlen(string); i++) // iterate over whole string
     {
@@ -21,10 +22,12 @@ remove_comments(char *string)
                 if(string[j] == '\n' && string[j + 1] != '#') // In case of multiline comments start again
                 {
                     remove_element(string , i, j+1 - i, strlen(string));
+                    done = true;
                     break;
                 }
             }
         }
+        if(done)break;
     }
 }
 
@@ -70,6 +73,7 @@ get_file(char * path)
 
     // Make sure the string is terminated.
     string[st.st_size] = '\0';
+
 
     return string;
 }
