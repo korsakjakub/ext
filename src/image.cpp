@@ -27,24 +27,19 @@ Image::Image (char* string)
     blue.resize(height,t_blue);
 }
 
-int
-Image::get_width() {return width;}
+int Image::get_width() {return width;}
 
-int
-Image::get_height() {return height;}
+int Image::get_height() {return height;}
 
-int
-Image::get_color_depth() {return color_depth;}
+int Image::get_color_depth() {return color_depth;}
 
-int
-Image::get_type() { return type[1]; }// 50 - pgm, 51 - ppm
+int Image::get_type() { return type[1]; }// 50 - pgm, 51 - ppm
 
-void
-Image::write()
+void Image::write()
 {
     std::string file_path;
     do{
-        printf("Podaj nazwę pliku:\n");
+        std::cout<<"Podaj nazwę pliku:\n";
         std::cin>>file_path;
     }while(file_path.empty());
 
@@ -71,12 +66,11 @@ Image::write()
             }
         }
     }
-    printf("Zapisano pomyślnie.\n");
+    std::cout<<"Zapisano pomyślnie.\n";
     pause();
 }
 
-void
-Image::fill(char * string)
+void Image::fill(char * string)
 {
 
     string = strtok (NULL, " \n");// eliminate the first token (useless)
@@ -119,8 +113,7 @@ Image::fill(char * string)
     }
 }
 
-void
-Image::print()
+void Image::print()
 {
     if(width < 200 && height < 200)
     {
@@ -130,9 +123,10 @@ Image::print()
             {
                 for (size_t j = 0; j < width; j++)
                 {
-                    printf("%s%d %s%d %s%d%s \t",RED,red[i][j],GRN, green[i][j], BLU, blue[i][j], NRM);
+                    //printf("%s%d %s%d %s%d%s \t",RED,red[i][j],GRN, green[i][j], BLU, blue[i][j], NRM);
+                    std::cout<<RED<<red[i][j]<<" "<<GRN<<green[i][j]<<" "<<BLU<<blue[i][j]<<NRM;
                 }
-                printf("\n");
+                std::cout<<std::endl;
             }
         } else if (get_type() == 50)//pgm
         {
@@ -140,16 +134,16 @@ Image::print()
             {
                 for (size_t j = 0; j < width; j++)
                 {
-                    printf("%s%d \t",CYN, red[i][j]);
+                    //printf("%s%d \t",CYN, red[i][j]);
+                    std::cout<<CYN<<red[i][j]<<"\t";
                 }
-                printf("\n%s",NRM);
+                std::cout<<std::endl<<NRM;
             }
         }
     }
 }
 
-void
-Image::crop(int x1, int y1, int x2, int y2)
+void Image::crop(int x1, int y1, int x2, int y2)
 {
     height = y2-y1+1;
     width = x2-x1+1;
@@ -176,8 +170,7 @@ Image::crop(int x1, int y1, int x2, int y2)
     blue.resize(height);
 }
 
-void
-Image::flip(char orientation)
+void Image::flip(char orientation)
 {
     if(orientation == 'v')
     {
@@ -194,8 +187,7 @@ Image::flip(char orientation)
         std::reverse(blue.begin(), blue.end());
     }
 }
-void
-Image::fill_with_value(doubleVector &arr, short int value)
+void Image::fill_with_value(doubleVector &arr, short int value)
 {
     for(size_t i = 0; i < arr.size(); i++)
     {
@@ -206,14 +198,13 @@ Image::fill_with_value(doubleVector &arr, short int value)
     }
 }
 
-void
-Image::zoom()
+void Image::zoom()
 {
     int n=1, x, y;
 
     while(1)
     {
-        printf("podaj n: ");
+        std::cout<<"podaj n: ";
         scanf("%d",&n);
         if(n <= 0 || n >= width || n >= height || height/n <= n || width/n <= n){
             continue;
@@ -290,13 +281,12 @@ Image::zoom()
 
 }
 
-void
-Image::rmcolor()
+void Image::rmcolor()
 {
     std::string color;
     vector z(width,0);
 
-    printf("który kolor? [c]zerwony/[z]ielony/[n]iebieski\n");
+    std::cout<<"który kolor? [c]zerwony/[z]ielony/[n]iebieski\n";
     do
     {
         std::cin>>color;
@@ -309,19 +299,18 @@ Image::rmcolor()
     pause();
 }
 
-void
-Image::puzzle()
+void Image::puzzle()
 {
     int n, x,y;
 
     while(1)
     {
-        printf("podaj n: ");
+        std::cout<<"podaj n: ";
         scanf("%d", &n);
 
         if (n > width || n > height)
         {
-            printf("n jest za duże jak na to zdjęcie\n");
+            std::cout<<"n jest za duże jak na to zdjęcie\n";
             continue;
         }
         break;
@@ -393,59 +382,15 @@ Image::puzzle()
 
 }
 
-int
-Image::round_to_n_multiple(int x, int n)
+int Image::round_to_n_multiple(int x, int n)
 {
     return  (x - x % n) / n;
 }
 
-void
-Image::pause()
+void Image::pause()
 {
     do
     {
-        printf("Enter aby kontynuować.\n");
+        std::cout<<"Enter aby kontynuować.\n";
     } while (std::cin.get() != '\n');
-}
-
-void
-Image::colors_to_base(doubleVectorWrapper &colors, tripleVectorWrapper &base, int x, int y, int n)
-{
-    int k=0;
-        for(size_t j = x; j>= 1; j--)
-        {
-            for(size_t i = y; i >= 1; i--)
-            {
-                for(short int p = 0; p <= n-1; p++)
-                {
-                    for(short int q = 0; q <= n-1; q++)
-                    {
-                        //colors[o][(y-i)*n + p][(x-j)*n + q] = base[o][k][p][q];
-                    }
-                }
-                k++;
-            }
-        }
-}
-void
-Image::base_to_colors(tripleVectorWrapper &base, doubleVectorWrapper &colors, int x, int y, int n)
-{
-    int k=0;
-    for(size_t o = 0; o < colors.size(); o++)
-    {
-        for(size_t j = x; j>= 1; j--)
-        {
-            for(size_t i = y; i >= 1; i--)
-            {
-                for(short int p = 0; p <= n-1; p++)
-                {
-                    for(short int q = 0; q <= n-1; q++)
-                    {
-                        //base[o][k][p][q] = colors[o][(y-i)*n + p][(x-j)*n + q];
-                    }
-                }
-                k++;
-            }
-        }
-    }
 }

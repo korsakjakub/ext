@@ -1,15 +1,13 @@
 #include "arg_handler.h"
 #include "colors.h"
 
-void
-remove_element(char *array, int index, int amount, int array_length)
+void remove_element(char *array, int index, int amount, int array_length)
 {
     int i;
     for (i = index; i < array_length - 1; i++) array[i] = array[i+amount];
 }
 
-void
-remove_comments(char *string)
+void remove_comments(char *string)
 {
     bool done = false;
 
@@ -32,8 +30,7 @@ remove_comments(char *string)
 }
 
 
-char *
-get_file(char * path)
+char * get_file(char * path)
 {
     char * string;
     struct stat st;

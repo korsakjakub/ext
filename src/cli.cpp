@@ -3,8 +3,7 @@
 #include "stdio.h"
 #include "colors.h"
 
-void
-run_cli(Image &img)
+void run_cli(Image &img)
 {
     struct winsize w;
     int width = img.get_width();
@@ -51,22 +50,19 @@ run_cli(Image &img)
     }
 }
 
-int
-get_terminal_width(struct winsize w)
+int get_terminal_width(struct winsize w)
 {
     ioctl(0, TIOCGWINSZ, &w);
     return w.ws_col;
 }
 
-int
-get_terminal_height(struct winsize w)
+int get_terminal_height(struct winsize w)
 {
     ioctl(0, TIOCGWINSZ, &w);
     return w.ws_row;
 }
 
-void
-draw_line(int width)
+void draw_line(int width)
 {
     for (size_t i = 0; i < width; i++)
     {
@@ -75,8 +71,7 @@ draw_line(int width)
     printf("%s\n\n",NRM);
 }
 
-void
-draw_menu(int width, int img_width, int img_height)
+void draw_menu(int width, int img_width, int img_height)
 {
     draw_line(width);
     printf("%sOpcje:%s\n",CYN,NRM);
@@ -89,8 +84,8 @@ draw_menu(int width, int img_width, int img_height)
     printf("szerokość: %d, wysokośc : %d\n", img_width, img_height);
     draw_line(width);
 }
-void
-crop_image(Image &img , int width, int height)
+
+void crop_image(Image &img , int width, int height)
 {
     int x1 = 0, y1 = 0, x2 = 0, y2 = 0;
     char c;
@@ -110,8 +105,7 @@ crop_image(Image &img , int width, int height)
     printf("przycięto do (%d,%d),(%d,%d)\n",x1,y1,x2,y2);
 }
 
-void
-clear_shell() {
+void clear_shell() {
     // \x1B[2J clears screen, \x1B[H moves the cursor to top-left corner
     printf("\x1B[2J\x1B[H");
 }
