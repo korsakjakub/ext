@@ -205,7 +205,7 @@ void Image::zoom()
     while(1)
     {
         std::cout<<"podaj n: ";
-        scanf("%d",&n);
+        std::cin>>n;
         if(n <= 0 || n >= width || n >= height || height/n <= n || width/n <= n){
             continue;
         }
