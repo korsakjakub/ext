@@ -1,6 +1,21 @@
 #include "arg_handler.h"
 #include "cli.h"
 #include "image.h"
+#include <string>
+#include <experimental/filesystem>
+#include <iostream>
+
+//namespace fs = std::experimental::filesystem;
+
+/*
+void does_file_exist(const fs::path& p, fs::file_status s = fs::file_status{})
+{
+    if(fs::status_known(s) ? fs::exists(s) : fs::exists(p))
+        std::cout<<"exists\n";
+    else
+        std::cout<<"nexists\n";
+}
+*/
 
 int main(int argc, char ** argv)
 {
@@ -10,6 +25,7 @@ int main(int argc, char ** argv)
         printf("USAGE: %s <input filename>\n", argv[0]);
         return 1;
     }
+    //std::string input(argv[1]);
 
     char * string = get_file(argv[1]);
 

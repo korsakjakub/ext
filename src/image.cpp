@@ -187,6 +187,7 @@ void Image::flip(char orientation)
         std::reverse(blue.begin(), blue.end());
     }
 }
+
 void Image::fill_with_value(doubleVector &arr, short int value)
 {
     for(size_t i = 0; i < arr.size(); i++)
@@ -196,6 +197,11 @@ void Image::fill_with_value(doubleVector &arr, short int value)
             arr[i][j] = value;
         }
     }
+}
+
+int Image::round_to_n_multiple(int x, int n)
+{
+    return  (x - x % n);
 }
 
 void Image::zoom()
@@ -213,29 +219,7 @@ void Image::zoom()
     }
 
     x = round_to_n_multiple(width,n);
-    crop(1,1,x*n,x*n);
-
-    vector i_row;
-    doubleVector ir_col;
-    doubleVector ig_col;
-    doubleVector ib_col;
-
-    int half_length = (x*n)/2;
-
-    i_row.resize(2*half_length,0);
-    ir_col.resize(2*half_length,i_row);
-    ig_col.resize(2*half_length,i_row);
-    ib_col.resize(2*half_length,i_row);
-
-    for(size_t i = 0; i < half_length; i++)
-    {
-        for(size_t j = 0; j < half_length; j++)
-        {
-            ir_col[i][j] = red[j+half_length/2][i+half_length/2];
-            ig_col[i][j] = green[j+half_length/2][i+half_length/2];
-            ib_col[i][j] = blue[j+half_length/2][i+half_length/2];
-        }
-    }
+    crop(1,1,x,x);
 
     vector row;
     doubleVector col;
@@ -243,40 +227,41 @@ void Image::zoom()
     doubleVectorWrapper g_base;
     doubleVectorWrapper b_base;
 
-    row.resize(x,0);
-    col.resize(x,row);
-    r_base.resize(x*x,col);
-    g_base.resize(x*x,col);
-    b_base.resize(x*x,col);
+    row.resize(n,0);
+    col.resize(n,row);
+    r_base.resize(x*x/n/n,col);
+    g_base.resize(x*x/n/n,col);
+    b_base.resize(x*x/n/n,col);
 
-    for(size_t i = 0; i < x; i++)
+    for(size_t i = 0; i < x/n; i++)
     {
-        for(size_t j = 0; j < x; j++)
+        for(size_t j = 0; j < x/n; j++)
         {
-            fill_with_value(r_base[i*x+j],ir_col[i][j]);
-            fill_with_value(g_base[i*x+j],ig_col[i][j]);
-            fill_with_value(b_base[i*x+j],ib_col[i][j]);
+            fill_with_value(r_base[i*x/n+j],red[j+x/n][i+x/n]);
+            fill_with_value(g_base[i*x/n+j],green[j+x/n][i+x/n]);
+            fill_with_value(b_base[i*x/n+j],blue[j+x/n][i+x/n]);
         }
     }
 
     int k = 0;
-    for(size_t j = x; j>= 1; j--)
+    for(size_t j = x/n; j>= 1; j--)
     {
-        for(size_t i = x; i >= 1; i--)
+        for(size_t i = x/n; i >= 1; i--)
         {
                 for(size_t p = 0; p < n; p++)
                 {
                     for(size_t q = 0; q < n; q++)
                     {
-                        red[(x-i)*n + p][(x-j)*n + q] = r_base[k][p][q];
-                        green[(x-i)*n + p][(x-j)*n + q] = g_base[k][p][q];
-                        blue[(x-i)*n + p][(x-j)*n + q] = b_base[k][p][q];
+                        red[x-i*n + p][x-j*n + q] = r_base[k][p][q];
+                        green[x-i*n + p][x-j*n + q] = g_base[k][p][q];
+                        blue[x-i*n + p][x-j*n + q] = b_base[k][p][q];
                     }
                 }
         k++;
         }
     }
 
+    printf("3\n");
     pause();
 
 }
@@ -319,7 +304,7 @@ void Image::puzzle()
     x = round_to_n_multiple(width, n);
     y = round_to_n_multiple(height, n);
 
-    crop(1,1,x*n,y*n);
+    crop(1,1,x,y);
 
     vector row;
     doubleVector col;
@@ -329,22 +314,22 @@ void Image::puzzle()
 
     row.resize(n,0);
     col.resize(n,row);
-    r_base.resize(x*y,col);
-    g_base.resize(x*y,col);
-    b_base.resize(x*y,col);
+    r_base.resize(x*y/n/n,col);
+    g_base.resize(x*y/n/n,col);
+    b_base.resize(x*y/n/n,col);
 
     int k=0;
-        for(size_t j = x; j>= 1; j--)
+        for(size_t j = x/n; j>= 1; j--)
         {
-            for(size_t i = y; i >= 1; i--)
+            for(size_t i = y/n; i >= 1; i--)
             {
                 for(short int p = 0; p <= n-1; p++)
                 {
                     for(short int q = 0; q <= n-1; q++)
                     {
-                        r_base[k][p][q] = red[(y-i)*n + p][(x-j)*n + q];
-                        g_base[k][p][q] = green[(y-i)*n + p][(x-j)*n + q];
-                        b_base[k][p][q] = blue[(y-i)*n + p][(x-j)*n + q];
+                        r_base[k][p][q] = red[y-i*n + p][x-j*n + q];
+                        g_base[k][p][q] = green[y-i*n + p][x-j*n + q];
+                        b_base[k][p][q] = blue[y-i*n + p][x-j*n + q];
                         //printf("%d\t%d\t%d\n",r_base[k][p][q], g_base[k][p][q], b_base[k][p][q]);
                     }
                 }
@@ -354,26 +339,26 @@ void Image::puzzle()
 
     // Fisher-Yates
     srand(time(NULL));
-    for (size_t i = 0; i < x*y; i++)
+    for (size_t i = 0; i < x*y/n/n; i++)
     {
-        int j = i + rand() % (x*y - i);
+        int j = i + rand() % (x*y/n/n - i);
         swap(r_base[i],r_base[j]);
         swap(g_base[i],g_base[j]);
         swap(b_base[i],b_base[j]);
     }
 
     k=0;
-        for(size_t j = x; j>= 1; j--)
+        for(size_t j = x/n; j>= 1; j--)
         {
-            for(size_t i = y; i >= 1; i--)
+            for(size_t i = y/n; i >= 1; i--)
             {
                 for(short int p = 0; p <= n-1; p++)
                 {
                     for(short int q = 0; q <= n-1; q++)
                     {
-                        red[(y-i)*n + p][(x-j)*n + q] = r_base[k][p][q];
-                        green[(y-i)*n + p][(x-j)*n + q] = g_base[k][p][q];
-                        blue[(y-i)*n + p][(x-j)*n + q] = b_base[k][p][q];
+                        red[y-i*n + p][x-j*n + q] = r_base[k][p][q];
+                        green[y-i*n + p][x-j*n + q] = g_base[k][p][q];
+                        blue[y-i*n + p][x-j*n + q] = b_base[k][p][q];
                     }
                 }
                 k++;
@@ -382,10 +367,6 @@ void Image::puzzle()
 
 }
 
-int Image::round_to_n_multiple(int x, int n)
-{
-    return  (x - x % n) / n;
-}
 
 void Image::pause()
 {
