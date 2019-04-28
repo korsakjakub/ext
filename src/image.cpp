@@ -81,7 +81,7 @@ int Image::get_height() {return height;}
 
 int Image::get_color_depth() {return color_depth;}
 
-int Image::get_type() { return type; }// 50 - pgm, 51 - ppm
+int Image::get_type() { return type; }// 2 - pgm, 3 - ppm
 
 void Image::write()
 {
@@ -91,10 +91,10 @@ void Image::write()
         std::cin>>file_path;
     }while(file_path.empty());
 
-    if( type == 3)
+    if( get_type() == 3)
     {
     std::ofstream output_file("output/" + file_path + ".ppm");
-    output_file <<"P"<< type <<"\n" << width << " " << height << "\n" <<color_depth << "\n";
+    output_file <<"P"<< get_type() <<"\n" << width << " " << height << "\n" <<color_depth << "\n";
         for(size_t j = 0; j < height; j++)
         {
             for(size_t i = 0; i < width; i++)
@@ -102,10 +102,10 @@ void Image::write()
                 output_file << red[j][i] << "\n" << green[j][i] << "\n" <<  blue[j][i] <<"\n";
             }
         }
-    } else if (type == 2)
+    } else if (get_type() == 2)
     {
         std::ofstream output_file("output/" + file_path + ".pgm");
-        output_file << "P"<< type <<"\n" << width << " " << height << "\n" <<color_depth << "\n";
+        output_file << "P"<< get_type() <<"\n" << width << " " << height << "\n" <<color_depth << "\n";
         for(size_t j = 0; j < height; j++)
         {
             for(size_t i = 0; i < width; i++)

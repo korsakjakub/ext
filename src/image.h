@@ -21,6 +21,7 @@ class Image {
         void write();
         void flip(char orientation);
         void zoom();
+        void pause();
         void rmcolor();
         void puzzle();
     private:
@@ -29,7 +30,6 @@ class Image {
         void base_to_colors(tripleVectorWrapper &, doubleVectorWrapper &, int, int, int);
         void fill_with_value(doubleVector &, short int);
         int round_to_n_multiple(int,int);
-        void pause();
         int type, width, height, color_depth;
         void set_dims(int, int);
         doubleVector red;

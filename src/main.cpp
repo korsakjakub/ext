@@ -1,6 +1,7 @@
 #include "arg_handler.h"
 #include "cli.h"
 #include "image.h"
+
 #include <string>
 #include <filesystem>
 #include <iostream>
@@ -27,21 +28,11 @@ int main(int argc, char ** argv)
 
     if(does_file_exist(input)){
         std::string file = get_file(input);
-        for(auto &s : file){
-            std::cout<<s;
-        }
         file = remove_comments(file);
-        std::cout<<std::endl;
-        for(auto &s : file){
-            std::cout<<s;
-        }
 
-
-        /*
-        Image image(string);
-        image.fill(string);
-        run_cli(image);
-        */
+        Image image(file);
+        TerminalInterface interface;
+        interface.run_cli(image);
     }
     else {
         std::cout<<"Plik nie istnieje: "<<input<<"\n";

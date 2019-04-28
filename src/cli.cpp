@@ -1,22 +1,20 @@
 #include "cli.h"
-#include "stdlib.h"
-#include "stdio.h"
 #include "colors.h"
+#include <iostream>
 
-void run_cli(Image &img)
+void TerminalInterface::run_cli(Image &img)
 {
-    struct winsize w;
     int width = img.get_width();
     int height = img.get_height();
     int depth = img.get_color_depth();
     int answer;
 
-    printf("Rozmiar zdjęcia:\t szerokośc = %d\t wysokość = %d\t głębia = %d\n",width, height, depth);
+    std::cout<<"Rozmiar zdjęcia:\t szerokośc = "<<width<<"\t wysokość = "<<height<<"\t głębia = "<<depth<<"\n";
 
 
     while(1)
     {
-        printf("Przyciąć? [y]/[n]\n");
+        std::cout<<"Przyciąć? [y]/[n]\n";
         answer = getchar();
         if(answer == 'n' || answer == 'y') break;
     }
@@ -28,6 +26,8 @@ void run_cli(Image &img)
     while(1)
     {
         answer = getchar();
+        if(answer == 'q'){break;}
+
         switch(answer)
         {
             case '1': img.flip('v');
@@ -43,56 +43,58 @@ void run_cli(Image &img)
             case '6': img.write();
                     break;
             default: clear_shell();
-                     img.print();
-                     draw_menu(get_terminal_width(w), img.get_width(), img.get_height());
+                     draw_menu(get_terminal_width(), img.get_width(), img.get_height());
         }
 
     }
 }
 
-int get_terminal_width(struct winsize w)
+int TerminalInterface::get_terminal_width()
 {
+    struct winsize w;
     ioctl(0, TIOCGWINSZ, &w);
     return w.ws_col;
 }
 
-int get_terminal_height(struct winsize w)
+int TerminalInterface::get_terminal_height()
 {
+    struct winsize w;
     ioctl(0, TIOCGWINSZ, &w);
     return w.ws_row;
 }
 
-void draw_line(int width)
+void TerminalInterface::draw_line(int width)
 {
     for (size_t i = 0; i < width; i++)
     {
-        printf("%s_",YEL);
+        std::cout<<YEL<<"_";
     }
-    printf("%s\n\n",NRM);
+    std::cout<<NRM<<"\n\n";
 }
 
-void draw_menu(int width, int img_width, int img_height)
+void TerminalInterface::draw_menu(int width, int img_width, int img_height)
 {
     draw_line(width);
-    printf("%sOpcje:%s\n",CYN,NRM);
-    printf("%s1.%s Odbijanie w pionie\n",RED, NRM);
-    printf("%s2.%s Odbijanie w poziomie\n",RED, NRM);
-    printf("%s3.%s Zoom n razy\n",RED, NRM);
-    printf("%s4.%s Usunięcie danego koloru\n",RED,NRM);
-    printf("%s5.%s Puzzle\n",RED,NRM);
-    printf("%s6.%s Zapisz\n",RED,NRM);
-    printf("szerokość: %d, wysokośc : %d\n", img_width, img_height);
+    std::cout<<CYN<<"Opcje:\n";
+    std::cout<<RED<<"1."<<NRM<<"Odbijanie w pionie\n";
+    std::cout<<RED<<"2."<<NRM<<"Odbijanie w poziomie\n";
+    std::cout<<RED<<"3."<<NRM<<"Zoom n razy\n";
+    std::cout<<RED<<"4."<<NRM<<"Usunięcie danego koloru\n";
+    std::cout<<RED<<"5."<<NRM<<"Puzzle\n";
+    std::cout<<RED<<"6."<<NRM<<"Zapisz\n";
+    std::cout<<RED<<"[q]"<<NRM" aby wyjść\n";
+    std::cout<<"szerokość: "<<img_width<<", wysokość : "<<img_height<<"\n";
     draw_line(width);
 }
 
-void crop_image(Image &img , int width, int height)
+void TerminalInterface::crop_image(Image &img , int width, int height)
 {
     int x1 = 0, y1 = 0, x2 = 0, y2 = 0;
     char c;
 
     do
     {
-        printf("x1,y1,x2,y2 = ");
+        std::cout<<"x1,y1,x2,y2 = ";
     } while(
            (
                 (scanf("%d,%d,%d,%d%c", &x1, &y1, &x2, &y2, &c) != 5 || c!='\n') && clean_stdin()) ||
@@ -102,16 +104,15 @@ void crop_image(Image &img , int width, int height)
                 x1 <= 0 ||  y1 <= 0
            );
     img.crop(x1,y1,x2,y2);
-    printf("przycięto do (%d,%d),(%d,%d)\n",x1,y1,x2,y2);
+    std::cout<<"przycięto do ("<<x1<<", "<<y1<<"),("<<x2<<", "<<y2<<")\n";
 }
 
-void clear_shell() {
+void TerminalInterface::clear_shell() {
     // \x1B[2J clears screen, \x1B[H moves the cursor to top-left corner
-    printf("\x1B[2J\x1B[H");
+    std::cout<<"\x1B[2J\x1B[H";
 }
 
-int
-clean_stdin()
+int TerminalInterface::clean_stdin()
 {
     while (getchar() !='\n');
     return 1;
