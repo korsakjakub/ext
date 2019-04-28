@@ -224,7 +224,7 @@ void Image::zoom()
         break;
     }
 
-    x = round_to_n_multiple(width,n);
+    x = round_to_n_multiple(std::min(width,height),n);
     crop(1,1,x,x);
 
     vector row;
@@ -239,13 +239,14 @@ void Image::zoom()
     g_base.resize(x*x/n/n,col);
     b_base.resize(x*x/n/n,col);
 
+
     for(size_t i = 0; i < x/n; i++)
     {
         for(size_t j = 0; j < x/n; j++)
         {
-            fill_with_value(r_base[i*x/n+j],red[j+x/n][i+x/n]);
-            fill_with_value(g_base[i*x/n+j],green[j+x/n][i+x/n]);
-            fill_with_value(b_base[i*x/n+j],blue[j+x/n][i+x/n]);
+            fill_with_value(r_base[i*x/n+j],red[j+x/n/n][i+x/n/n]);
+            fill_with_value(g_base[i*x/n+j],green[j+x/n/n][i+x/n/n]);
+            fill_with_value(b_base[i*x/n+j],blue[j+x/n/n][i+x/n/n]);
         }
     }
 
@@ -267,7 +268,6 @@ void Image::zoom()
         }
     }
 
-    printf("3\n");
     pause();
 
 }
