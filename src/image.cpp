@@ -1,30 +1,78 @@
 #include "image.h"
 #include "colors.h"
 
-#include <time.h>
 #include <iostream>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
 #include <algorithm>
 #include <fstream>
 
-Image::Image (char* string)
+Image::Image (std::string input)
 {
-    type = strtok (string, " \n");
-    string = strtok (NULL, " \n");
-    width = atoi(string);
-    string = strtok (NULL, " \n");
-    height = atoi(string);
-    string = strtok (NULL, " \n");
-    color_depth = atoi(string);
+    vector t_red;
+    vector t_green;
+    vector t_blue;
+    int k = 0;
 
-    t_red.resize(width,0);
-    t_green.resize(width,0);
-    t_blue.resize(width,0);
-    red.resize(height,t_red);
-    green.resize(height,t_green);
-    blue.resize(height,t_blue);
+    std::string temp = "";
+    int x = 0, color = 0, y=0;
+
+    for(auto & c : input){
+        //accumulate integer
+        if (c >= 48 && c <= 57){ //check if c is an integer (ASCII table)
+            temp += c;
+        }else{
+            if(temp != ""){
+                int o = std::stoi(temp);
+                if(k <= 3){
+                    switch(k){
+                        case 0: type = o;
+                                break;
+                        case 1: width = o;
+                                t_red.resize(width,0);
+                                t_green.resize(width,0);
+                                t_blue.resize(width,0);
+                                break;
+                        case 2: height = o;
+                                red.resize(height,t_red);
+                                green.resize(height,t_green);
+                                blue.resize(height,t_blue);
+                                break;
+                        case 3: color_depth = o;
+                                break;
+                    }
+                    ++k;
+                }else if(type == 3){
+
+                    switch(color % 3)
+                    {
+                        case 0: t_red[x] = o;break;
+                        case 1: t_green[x] = o; break;
+                        case 2: t_blue[x] = o;x++;break;
+                    }
+                    if ( x == width)
+                    {
+                        red[y] = t_red;
+                        green[y] = t_green;
+                        blue[y] = t_blue;
+                        x = 0;
+                        y++;
+                    }
+
+                    color++;
+
+                }else if(type == 2){
+                    t_red[x] = o;
+                    x++;
+                    if (x == width)
+                    {
+                        red[y] = t_red;
+                        x = 0;
+                        y++;
+                    }
+                }
+            }
+            temp.clear();
+        }
+    }
 }
 
 int Image::get_width() {return width;}
@@ -33,20 +81,20 @@ int Image::get_height() {return height;}
 
 int Image::get_color_depth() {return color_depth;}
 
-int Image::get_type() { return type[1]; }// 50 - pgm, 51 - ppm
+int Image::get_type() { return type; }// 50 - pgm, 51 - ppm
 
 void Image::write()
 {
     std::string file_path;
     do{
-        std::cout<<"Podaj nazwę pliku:\n";
+        std::cout<<"Podaj nazwę pliku: (bez rozszerzenia)\n";
         std::cin>>file_path;
     }while(file_path.empty());
 
-    if( type[1] == 51)
+    if( type == 3)
     {
     std::ofstream output_file("output/" + file_path + ".ppm");
-    output_file << type <<"\n" << width << " " << height << "\n" <<color_depth << "\n";
+    output_file <<"P"<< type <<"\n" << width << " " << height << "\n" <<color_depth << "\n";
         for(size_t j = 0; j < height; j++)
         {
             for(size_t i = 0; i < width; i++)
@@ -54,10 +102,10 @@ void Image::write()
                 output_file << red[j][i] << "\n" << green[j][i] << "\n" <<  blue[j][i] <<"\n";
             }
         }
-    } else if (type[1] == 50)
+    } else if (type == 2)
     {
         std::ofstream output_file("output/" + file_path + ".pgm");
-        output_file << type <<"\n" << width << " " << height << "\n" <<color_depth << "\n";
+        output_file << "P"<< type <<"\n" << width << " " << height << "\n" <<color_depth << "\n";
         for(size_t j = 0; j < height; j++)
         {
             for(size_t i = 0; i < width; i++)
@@ -70,77 +118,35 @@ void Image::write()
     pause();
 }
 
-void Image::fill(char * string)
+std::string Image::to_string()
 {
-
-    string = strtok (NULL, " \n");// eliminate the first token (useless)
-
-    int x = 0, color = 0, y=0;
-
-    while (string != NULL) // generate tokens as long as you don't encounter NULL
+    std::string output = "";
+    if(get_type() == 3)//ppm
     {
-        if(get_type() == 51)
+        for (size_t i = 0; i < height; i++)
         {
-            switch(color % 3)
+            for (size_t j = 0; j < width; j++)
             {
-                case 0: t_red[x] = atoi(string);break;
-                case 1: t_green[x] = atoi(string); break;
-                case 2: t_blue[x] = atoi(string);x++;break;
-            }
-            if ( x == width)
-            {
-                red[y] = t_red;
-                green[y] = t_green;
-                blue[y] = t_blue;
-                x = 0;
-                y++;
-            }
-
-            color++;
-        } else if(get_type() == 50)
-        {
-            t_red[x] = atoi(string);
-            x++;
-            if (x == width)
-            {
-                red[y] = t_red;
-                x = 0;
-                y++;
+                output.append(std::to_string(red[i][j]));
+                output.append("\n");
+                output.append(std::to_string(green[i][j]));
+                output.append("\n");
+                output.append(std::to_string(blue[i][j]));
+                output.append("\n");
             }
         }
-        string = strtok (NULL, " \n");
-
-    }
-}
-
-void Image::print()
-{
-    if(width < 200 && height < 200)
+    } else if (get_type() == 2)//pgm
     {
-        if(get_type() == 51)//ppm
+        for (size_t i = 0; i < height; i++)
         {
-            for (size_t i = 0; i < height; i++)
+            for (size_t j = 0; j < width; j++)
             {
-                for (size_t j = 0; j < width; j++)
-                {
-                    //printf("%s%d %s%d %s%d%s \t",RED,red[i][j],GRN, green[i][j], BLU, blue[i][j], NRM);
-                    std::cout<<RED<<red[i][j]<<" "<<GRN<<green[i][j]<<" "<<BLU<<blue[i][j]<<NRM;
-                }
-                std::cout<<std::endl;
-            }
-        } else if (get_type() == 50)//pgm
-        {
-            for (size_t i = 0; i < height; i++)
-            {
-                for (size_t j = 0; j < width; j++)
-                {
-                    //printf("%s%d \t",CYN, red[i][j]);
-                    std::cout<<CYN<<red[i][j]<<"\t";
-                }
-                std::cout<<std::endl<<NRM;
+                output.append(std::to_string(red[i][j]));
+                output.append("\n");
             }
         }
     }
+    return output;
 }
 
 void Image::crop(int x1, int y1, int x2, int y2)
@@ -212,7 +218,7 @@ void Image::zoom()
     {
         std::cout<<"podaj n: ";
         std::cin>>n;
-        if(n <= 0 || n >= width || n >= height || height/n <= n || width/n <= n){
+        if(n <= 1 || n >= width || n >= height || height/n <= n || width/n <= n){
             continue;
         }
         break;

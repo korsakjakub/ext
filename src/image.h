@@ -2,6 +2,7 @@
 #define IMAGE_H
 
 #include <vector>
+#include <string>
 
 typedef std::vector<short int> vector;
 typedef std::vector<vector> doubleVector;
@@ -10,14 +11,12 @@ typedef std::vector<doubleVectorWrapper> tripleVectorWrapper;
 
 class Image {
     public:
-        Image(char *);
+        Image(std::string);
         int get_width();
         int get_height();
         int get_color_depth();
         int get_type();
-        void fill(char *);
-        void print();
-
+        std::string to_string();
         void crop(int, int, int, int);
         void write();
         void flip(char orientation);
@@ -31,17 +30,11 @@ class Image {
         void fill_with_value(doubleVector &, short int);
         int round_to_n_multiple(int,int);
         void pause();
-        int width, height, color_depth;
-        char * type;
-        vector t_red;
-        vector t_green;
-        vector t_blue;
+        int type, width, height, color_depth;
+        void set_dims(int, int);
         doubleVector red;
         doubleVector green;
         doubleVector blue;
-
-
-
 };
 
 #endif /* IMAGE_H */
